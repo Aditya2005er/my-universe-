@@ -2,202 +2,132 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#02020a">
-<title>Susmitha — My Moon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sorry</title>
 <style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#02020a}
-body{touch-action:none}
-canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
-#name,#caption{position:fixed;left:0;right:0;text-align:center;color:#fff;pointer-events:none;opacity:0;transition:opacity .7s ease;font-family:Georgia,"Times New Roman",serif}
-#name{top:29%;font-size:clamp(42px,14vw,82px);font-weight:700;letter-spacing:2px;text-shadow:0 0 12px rgba(255,220,245,.9),0 0 30px rgba(255,160,220,.45)}
-#heart{position:fixed;left:0;right:0;top:54%;text-align:center;color:#ffb1d5;font-size:clamp(42px,12vw,70px);opacity:0;transition:opacity .7s ease;text-shadow:0 0 18px rgba(255,100,190,.8);pointer-events:none}
-#caption{top:70%;font-size:clamp(17px,5vw,25px);letter-spacing:5px;text-shadow:0 0 14px #fff}
-#hint{position:fixed;top:18px;left:0;right:0;text-align:center;color:#ffffff66;font:10px Georgia,serif;letter-spacing:3px;pointer-events:none}
+  :root {
+    --sky-top: #050b1f;
+    --sky-mid: #0d1b3d;
+    --sky-low: #24406b;
+    --moon: #fdf8e4;
+    --text: #dfe9ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-low) 100%);
+    font-family: "Georgia", "Palatino Linotype", serif;
+  }
+
+  /* stars */
+  .stars {
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 18%, #fff, transparent),
+      radial-gradient(1px 1px at 27% 8%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 41% 30%, #fff, transparent),
+      radial-gradient(1px 1px at 58% 12%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 72% 26%, #fff, transparent),
+      radial-gradient(1px 1px at 88% 9%, #fff, transparent),
+      radial-gradient(1px 1px at 6% 52%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 93% 48%, #fff, transparent),
+      radial-gradient(1px 1px at 20% 72%, #fff, transparent),
+      radial-gradient(1px 1px at 66% 66%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 82% 80%, #fff, transparent),
+      radial-gradient(1px 1px at 35% 88%, #fff, transparent);
+    animation: twinkle 5s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { from { opacity: .45; } to { opacity: .95; } }
+
+  /* moon */
+  .moon {
+    position: fixed;
+    top: 9vh; right: 12vw;
+    width: min(34vw, 34vh);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 28%, rgba(0,0,0,.08) 0 6%, transparent 7%),
+      radial-gradient(circle at 62% 40%, rgba(0,0,0,.07) 0 9%, transparent 10%),
+      radial-gradient(circle at 45% 70%, rgba(0,0,0,.06) 0 7%, transparent 8%),
+      radial-gradient(circle at 35% 35%, #fffef5, var(--moon) 60%, #e9e0b8 100%);
+    box-shadow:
+      0 0 40px 10px rgba(253, 248, 228, .35),
+      0 0 120px 50px rgba(160, 190, 255, .25);
+    animation: glow 7s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from { box-shadow: 0 0 40px 10px rgba(253,248,228,.30), 0 0 100px 40px rgba(160,190,255,.20); }
+    to   { box-shadow: 0 0 55px 16px rgba(253,248,228,.45), 0 0 150px 70px rgba(160,190,255,.32); }
+  }
+
+  /* typed text */
+  #type {
+    position: fixed; inset: 0;
+    padding: 5vh 6vw;
+    color: var(--text);
+    font-style: italic;
+    font-size: clamp(1.6rem, 6.5vw, 3.4rem);
+    line-height: 1.35;
+    letter-spacing: .02em;
+    word-break: break-all;
+    overflow: hidden;
+    text-shadow: 0 0 14px rgba(150, 185, 255, .6);
+    transition: opacity 1.2s ease;
+  }
+  #type.fade { opacity: 0; }
+  .caret {
+    display: inline-block;
+    width: .08em; height: 1em;
+    background: var(--text);
+    vertical-align: -0.12em;
+    margin-left: 2px;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
 </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div id="name">Susmitha</div>
-<div id="heart">♥</div>
-<div id="caption">Somehow, every star leads me back to you.</div>
-<div id="hint">TAP TO CHANGE • SWIPE</div>
+  <div class="stars"></div>
+  <div class="moon"></div>
+  <div id="type"></div>
 
 <script>
-(function(){
-"use strict";
+  var box = document.getElementById('type');
+  var word = 'sorry ';
+  var text = document.createTextNode('');
+  var caret = document.createElement('span');
+  caret.className = 'caret';
+  box.appendChild(text);
+  box.appendChild(caret);
 
-var canvas=document.getElementById("c");
-var ctx=canvas.getContext("2d");
-var nameEl=document.getElementById("name");
-var heartEl=document.getElementById("heart");
-var captionEl=document.getElementById("caption");
-var hint=document.getElementById("hint");
+  var i = 0;
+  var speed = 70; // ms per letter
 
-var W=0,H=0,dpr=1;
-var particles=[];
-var stars=[];
-var scene=0;
-var previous=0;
-var changed=0;
-var downX=0,downY=0;
-
-var COUNT=260;
-var TAU=Math.PI*2;
-
-function resize(){
-  W=window.innerWidth;
-  H=window.innerHeight;
-  dpr=Math.min(window.devicePixelRatio||1,1.5);
-  canvas.width=Math.floor(W*dpr);
-  canvas.height=Math.floor(H*dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  makeStars();
-  makeTargets();
-}
-
-function makeStars(){
-  stars=[];
-  var n=Math.min(55,Math.floor(W*H/11000));
-  for(var i=0;i<n;i++){
-    stars.push({
-      x:Math.random()*W,
-      y:Math.random()*H,
-      r:.4+Math.random()*.8,
-      a:.25+Math.random()*.5
-    });
+  function restart() {
+    box.classList.add('fade');
+    setTimeout(function () {
+      text.nodeValue = '';
+      i = 0;
+      box.classList.remove('fade');
+      setTimeout(typeNext, 400);
+    }, 1300);
   }
-}
 
-function scatter(){
-  return {x:Math.random()*W,y:Math.random()*H};
-}
-
-function galaxy(){
-  var a=Math.random()*TAU;
-  var r=Math.sqrt(Math.random())*Math.min(W,H)*.40;
-  return {
-    x:W*.5+Math.cos(a+r*.012)*r,
-    y:H*.45+Math.sin(a+r*.012)*r*.65
-  };
-}
-
-function moon(){
-  var cx=W*.5,cy=H*.42,R=Math.min(W,H)*.25;
-  for(var i=0;i<60;i++){
-    var x=cx+(Math.random()*2-1)*R;
-    var y=cy+(Math.random()*2-1)*R;
-    if(Math.hypot(x-cx,y-cy)<=R){
-      var ox=cx+R*.42,oy=cy-R*.03;
-      if(Math.hypot(x-ox,y-oy)>R*.87)return{x:x,y:y};
+  function typeNext() {
+    var prev = text.nodeValue;
+    text.nodeValue = prev + word.charAt(i % word.length);
+    i++;
+    // screen full -> remove the overflowing letter, pause, then start over forever
+    if (box.scrollHeight > box.clientHeight + 1) {
+      text.nodeValue = prev;
+      setTimeout(restart, 1500);
+      return;
     }
-  }
-  return{x:cx,y:cy};
-}
-
-function makeTargets(){
-  if(!particles.length){
-    for(var i=0;i<COUNT;i++){
-      particles.push({
-        scatter:scatter(),
-        galaxy:galaxy(),
-        moon:moon(),
-        x:0,y:0,
-        alpha:.35+Math.random()*.55,
-        phase:Math.random()*TAU
-      });
-    }
-  }else{
-    for(var j=0;j<particles.length;j++){
-      particles[j].scatter=particles[j].scatter||scatter();
-      particles[j].galaxy=galaxy();
-      particles[j].moon=moon();
-    }
-  }
-}
-
-function target(p,s){
-  if(s===0)return p.scatter;
-  if(s===1)return p.galaxy;
-  if(s===2)return p.moon;
-  return {x:W/2,y:H/2};
-}
-
-function ease(t){
-  return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-}
-
-function change(n){
-  previous=scene;
-  scene=(n+4)%4;
-  changed=performance.now();
-
-  var finalScene=scene===3;
-  nameEl.style.opacity=finalScene?"1":"0";
-  heartEl.style.opacity=finalScene?"1":"0";
-  captionEl.style.opacity=finalScene?"1":"0";
-  hint.style.opacity=finalScene?"0":"1";
-}
-
-function draw(now){
-  ctx.fillStyle="#02020a";
-  ctx.fillRect(0,0,W,H);
-
-  var g=ctx.createRadialGradient(W*.5,H*.45,0,W*.5,H*.45,Math.max(W,H)*.65);
-  g.addColorStop(0,"rgba(65,40,90,.16)");
-  g.addColorStop(1,"rgba(0,0,0,0)");
-  ctx.fillStyle=g;
-  ctx.fillRect(0,0,W,H);
-
-  for(var i=0;i<stars.length;i++){
-    var s=stars[i];
-    ctx.globalAlpha=s.a;
-    ctx.fillStyle="#fff";
-    ctx.fillRect(s.x,s.y,s.r,s.r);
-  }
-  ctx.globalAlpha=1;
-
-  var t=Math.min(1,(now-changed)/900);
-  var e=ease(t);
-
-  ctx.font="8px Georgia,serif";
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  for(var k=0;k<particles.length;k++){
-    var p=particles[k];
-    var a=target(p,previous);
-    var b=target(p,scene);
-    var x=a.x+(b.x-a.x)*e;
-    var y=a.y+(b.y-a.y)*e;
-    ctx.fillStyle="rgba(255,235,250,"+p.alpha+")";
-    ctx.fillText("Susmitha",x,y);
+    setTimeout(typeNext, speed);
   }
 
-  requestAnimationFrame(draw);
-}
-
-canvas.addEventListener("pointerdown",function(e){
-  downX=e.clientX;
-  downY=e.clientY;
-});
-
-canvas.addEventListener("pointerup",function(e){
-  var dx=e.clientX-downX;
-  var dy=e.clientY-downY;
-  if(Math.abs(dx)>45 && Math.abs(dx)>Math.abs(dy)){
-    change(scene+(dx<0?1:-1));
-  }else{
-    change(scene+1);
-  }
-});
-
-window.addEventListener("resize",resize);
-
-resize();
-changed=performance.now()-1000;
-requestAnimationFrame(draw);
-})();
+  typeNext();
 </script>
 </body>
 </html>
